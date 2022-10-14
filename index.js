@@ -1,5 +1,4 @@
 const Queue = require('bull');
-const { createClient } = require('redis');
 
 (async () => {
 	try {
@@ -24,7 +23,6 @@ const { createClient } = require('redis');
 			done();
 		});
 	} catch (err) {
-		// console.log('Redis Client Error', err);
 		console.log('Bull Job Error', err);
 	}
 })();
