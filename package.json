@@ -7,10 +7,11 @@
     "axios": "^1.1.2",
     "bull": "^4.10.1",
     "express": "^4.18.2",
+    "nodemon": "^2.0.20",
     "redis": "^4.3.1"
   },
   "description": "This is example repo to demonstrate background job and caching in nodejs",
   "scripts": {
-    "start": "node index.js"
+    "start": "nodemon index.js"
   }
 }
