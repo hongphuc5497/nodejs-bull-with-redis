@@ -1,8 +1,8 @@
-const express = require('express');
+const { createClient } = require('redis');
 const axios = require('axios');
+const express = require('express');
 const app = express();
 const Queue = require('bull');
-const { createClient } = require('redis');
 
 let redisClient;
 (async () => {
@@ -21,21 +21,19 @@ app.get('/fish-species', async (req, res) => {
 		let species;
 		let isCached = false;
 
-		const isExist = await redisClient.EXISTS(CACHE_KEY);
-		if (isExist) {
+		const cachedResult = await redisClient.get(CACHE_KEY);
+		if (cachedResult) {
 			isCached = true;
 
-			const cachedData = await redisClient.LRANGE(CACHE_KEY, 0, -1);
-			species = cachedData.map((item) => JSON.parse(item));
+			species = JSON.parse(cachedResult);
 		} else {
 			const API_URL = 'https://www.fishwatch.gov/api/species';
 			const { data } = await axios.get(API_URL);
 
-			await Promise.all(
-				data.map((element) => {
-					redisClient.RPUSH(CACHE_KEY, JSON.stringify(element));
-				})
-			);
+			await redisClient.set(CACHE_KEY, JSON.stringify(data), {
+				EX: 180,
+				NX: true,
+			});
 
 			species = data;
 		}
@@ -55,30 +53,3 @@ const PORT = process.env.PORT || 8888;
 app.listen(PORT, () => {
 	console.log(`App listening on port ${PORT}`);
 });
-
-// (async () => {
-// 	try {
-// 		const basicQueue = new Queue('basic-queue');
-// 		await basicQueue.add({
-// 			name: 'Test',
-// 			age: 20,
-// 		});
-// 		basicQueue.process((job, done) => {
-// 			console.log(job.data);
-// 			done();
-// 		});
-
-// 		const scheduleQueue = new Queue('schedule-queue', {
-// 			defaultJobOptions: {
-// 				repeat: { every: 1000 * 60 * 5 },
-// 			},
-// 		});
-// 		await scheduleQueue.add({});
-// 		scheduleQueue.process((_, done) => {
-// 			console.log('Schedule job');
-// 			done();
-// 		});
-// 	} catch (err) {
-// 		console.log('Bull Job Error', err);
-// 	}
-// })();
