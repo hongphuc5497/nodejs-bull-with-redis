@@ -1,28 +1,15 @@
-const Queue = require('bull');
+const express = require('express');
+const app = express();
 
-(async () => {
-	try {
-		const basicQueue = new Queue('basic-queue');
-		await basicQueue.add({
-			name: 'Test',
-			age: 20,
-		});
-		basicQueue.process((job, done) => {
-			console.log(job.data);
-			done();
-		});
+const redisClient = require('./redisClient');
+const cacheMiddleware = require('./cacheMiddleware');
+const fetchDataCommand = require('./fetchDataCommand');
 
-		const scheduleQueue = new Queue('schedule-queue', {
-			defaultJobOptions: {
-				repeat: { every: 1000 * 60 * 5 },
-			},
-		});
-		await scheduleQueue.add({});
-		scheduleQueue.process((_, done) => {
-			console.log('Schedule job');
-			done();
-		});
-	} catch (err) {
-		console.log('Bull Job Error', err);
-	}
-})();
+app.get('/fish-species', cacheMiddleware, fetchDataCommand);
+
+redisClient.connect().then(() => {
+	const PORT = process.env.PORT || 8888;
+	app.listen(PORT, () => {
+		console.log(`App listening on port ${PORT}`);
+	});
+});
