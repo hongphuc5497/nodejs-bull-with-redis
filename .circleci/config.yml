@@ -1,0 +1,26 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@5.0.3
+
+jobs:
+  test:
+    docker:
+      - image: cimg/node:19.0.1
+      - image: redis
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          command: yarn test
+          name: Run tests
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - .
+
+workflows:
+  sample:
+    jobs:
+      - test
