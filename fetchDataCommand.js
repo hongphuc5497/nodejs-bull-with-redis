@@ -17,8 +17,6 @@ module.exports = async (req, res) => {
 			data,
 		});
 	} catch (err) {
-		console.error(err);
-
 		return res.status(404).send('Data unavailable');
 	}
 };

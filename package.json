@@ -1,17 +1,29 @@
 {
   "name": "nodejs-bull-with-redis",
+  "description": "This is example repo to demonstrate background job and caching in nodejs",
   "version": "1.0.0",
-  "main": "index.js",
   "license": "MIT",
+  "private": "true",
+  "scripts": {
+    "start": "node ./bin/www",
+    "test": "jest",
+    "test:watch": "yarn run test -- --watch"
+  },
   "dependencies": {
     "axios": "^1.1.2",
     "bull": "^4.10.1",
+    "cookie-parser": "^1.4.6",
+    "debug": "^4.3.4",
     "express": "^4.18.2",
+    "http-errors": "^2.0.0",
+    "morgan": "^1.10.0",
     "nodemon": "^2.0.20",
+    "pug": "^3.0.2",
     "redis": "^4.3.1"
   },
-  "description": "This is example repo to demonstrate background job and caching in nodejs",
-  "scripts": {
-    "start": "nodemon index.js"
+  "devDependencies": {
+    "jest": "^29.3.1",
+    "redis-mock": "^0.56.3",
+    "supertest": "^6.3.1"
   }
 }
